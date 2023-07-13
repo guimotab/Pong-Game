@@ -1,0 +1,53 @@
+<canvas width = "1300" height ="600"></canvas>
+<script>
+    const tela = document.querySelector("canvas");
+    const pincel = tela.getContext("2d");
+
+    let bola = {
+        raioBola : 10,
+        xBola : 650,
+        yBola : 300,
+        taxaMovimentoBolaX : 10,
+        taxaMovimentoBolaY : 10,
+    }
+
+    let raioBola = 10
+    let xBola = 650
+    let yBola = 300
+    let taxaMovimentoBolaX = 10
+    let taxaMovimentoBolaY = 10 
+
+    const corFundo = function(){
+        pincel.fillStyle = "black";
+        pincel.fillRect(0, 0, 1300, 600);
+    }
+
+    const posicaoInicialBola = function(){
+        pincel.fillStyle = "white";
+        pincel.beginPath();
+        pincel.arc(bola.xBola, bola.yBola, bola.raioBola, 0, 2 * Math.PI);
+        pincel.fill();
+    }
+    const posicaoInicialBola2 = function(){
+        pincel.fillStyle = "white";
+        pincel.beginPath();
+        pincel.arc(xBola, yBola, raioBola, 0, 2 * Math.PI);
+        pincel.fill();
+    }
+
+    function atualizaTela() {
+        corFundo();
+        posicaoInicialBola();
+       
+
+        bola.xBola += bola.taxaMovimentoBolaX;
+        bola.yBola += bola.taxaMovimentoBolaY;
+        
+
+        console.log(bola.xBola)
+        console.log(xBola)
+    }
+
+    setInterval(atualizaTela, 20);
+
+</script>

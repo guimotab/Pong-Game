@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo Pong Solo</title>
+    <link rel="stylesheet" href="./style/style-pong.css">
+    
+</head>
+<body class="tela-jogo">
+    <header class="cabecalho">
+        <h1 class= "cabecalho__texto">PONG VERSÃO SOLO</h1>
+    </header>
+    <main>
+        <section>
+            <nav class="navegacao">
+                <a class = "navegacao__link" href="./jogo-pong-solo.html">Pong Versão Solo</a>
+                <a class = "navegacao__link" href="./jogo-pong-duo.html" >Pong Versão Duo</a>
+            </nav>
+        </section>
+        <section class="tela-jogo">
+            <canvas class="tela-jogo__programa" width = "1300" height ="600"></canvas>
+            <canvas width = "1300" height ="600"></canvas>
+            <script>
+                // let input = document.querySelector("input");
+                const tela = document.querySelector("canvas");
+                const pincel = tela.getContext("2d");
+            
+                const cima = 38;
+                const baixo = 40;
+                
+                const corFundo = function(){
+                    pincel.fillStyle = "black";
+                    pincel.fillRect(0, 0, 1300, 600);
+                }
+                const linhaMeio = function(yPontilhado, cor){
+                    pincel.fillStyle = cor;
+                    pincel.fillRect(645, yPontilhado, 10, 20);
+                }
+                const posicaoInicialBola = function(cor){
+                    pincel.fillStyle = cor;
+                    pincel.beginPath();
+                    pincel.arc(bola.x, bola.y, bola.raio, 0, 2 * Math.PI);
+                    pincel.fill();
+                } 
+                const posicaoBolaPoder = function (cor, posicaoX, posicaoY) {
+                    pincel.fillStyle = cor;
+                    pincel.beginPath();
+                    pincel.arc(posicaoX, posicaoY, 12, 0, 2 * Math.PI);
+                    pincel.fill();
+                }
+                //imagens
+                const zero = new Image();
+                const um = new Image();
+                const dois = new Image();
+                const três = new Image();
+                const quatro = new Image();
+                const cinco = new Image();
+                const seis = new Image();
+                const sete = new Image();
+                const oito = new Image();
+                const nove = new Image();
+                const oponenteWin = new Image();
+                const euWin = new Image();
+                const player1Win = new Image();
+                const player2Win = new Image();
+                zero.src = './Pong/0.png';
+                um.src = './Pong/1.png';
+                dois.src = './Pong/2.png';
+                três.src = './Pong/3.png';
+                quatro.src = './Pong/4.png';
+                cinco.src = './Pong/5.png';
+                seis.src = './Pong/6.png';
+                sete.src = './Pong/7.png';
+                oito.src = './Pong/8.png';
+                nove.src = './Pong/9.png';
+                oponenteWin.src = './Pong/op-gan.png';
+                euWin.src = './Pong/eu-gan.png';
+                player1Win.src = './Pong/p1-gan.png';
+                player2Win.src = './Pong/p2-gan.png';
+            
+                class Poderes {
+                    constructor(cor, posicaoY, ativo = false) {
+                        this.cor = cor;
+                        this.posicaoY = posicaoY;
+                        this.ativo = ativo;
+                    }
+                }
+                let poderAzul;
+                let poderCinza;
+                let poderVermelho;
+                let poderAmarelo;
+            
+                let posicaoXPoder = -25;
+                let poderesAtivo = false;
+                let colidiuPoder = false;
+                let segundosPassados = 0;
+                let tempoPoderAtivo = 0; // quantidade de tempo que o poder está ativo
+                let poderesPrimeiraVez = true;
+            
+                let mostrarGanhouEu = false
+                let mostrarGanhouOponente = false
+            
+                let bola = {
+                    raio : 11,
+                    x : 650,
+                    y : 300,
+                    velocidadeX : 10 * calculaDirecaoBola(),
+                    velocidadeY : 8 * calculaDirecaoBola(),
+                    acelerou: false,
+                    cor: "white"
+                }
+                let minhaRaquete = {
+                    x : 1255,
+                    y: 240,
+                    comprimentoJogador: 150,
+                    pontuacao: 0
+                }
+                let oponenteRaquete = {
+                    inicialY: 60,
+                    x: 30,
+                    y: 300,
+                    comprimentoJogador: 150,
+                    pontuacao: 0
+                }  
+                function construirLinha(){
+                    let yPontilhado = 5;
+                    while (yPontilhado < 600) {
+                        linhaMeio (yPontilhado,'lightblue');	
+                        yPontilhado += 30;
+                    }
+                }
+                function criarJogador() {
+                    pincel.fillStyle = 'white';
+                    pincel.fillRect(minhaRaquete.x, minhaRaquete.y, 15, minhaRaquete.comprimentoJogador);
+                }
+                function criarInimigo() {
+                    pincel.fillStyle = "#f44e3f" ;
+                    pincel.fillRect(oponenteRaquete.x, oponenteRaquete.y, 15, oponenteRaquete.comprimentoJogador);
+                }
+                function calculaDirecaoBola(){
+                    let direcao = Math.round(Math.random());
+                    direcao == 1 ? direcao = -1 : direcao = 1;
+                    return direcao;
+                }
+                function calculaPosicaoOponente(){
+                    //60 meio / 100 baixo / 30 cima / 180 fora / -20 fora
+                    let inteligenciaOponente = [60, 100, 30, 180, -20];
+                    let i = 0;
+                    let valor = Math.round(Math.random()*100);
+                        if (valor > 40 && valor < 55) {i = 0}; //15 numeros
+                        if (valor >= 55 && valor < 85 ) {i = 1}; // 25 numeros
+                        if (valor <= 40 && valor > 15) {i = 2}; // 35 numeros
+                        if (valor <= 15) {i = 3}; // 15 numeros
+                        if (valor >= 85) {i = 4};// 15 numeros
+                        return inteligenciaOponente[i];
+                }
+                function atualizaPosicaoInimigo(){
+                    oponenteRaquete.y =  bola.y - oponenteRaquete.inicialY;
+                    if (oponenteRaquete.y + oponenteRaquete.comprimentoJogador >= 600){
+                        oponenteRaquete.y = 450;
+                    } 
+                    if (oponenteRaquete.y <= 0){
+                        oponenteRaquete.y = 0;
+                    }
+                }
+                function atualizaBola(){
+                    bola.x += bola.velocidadeX;
+                    bola.y += bola.velocidadeY;
+                    //verifica se bateu borda
+                    bola.y >= 600 || bola.y <= 0 ? bola.velocidadeY = -bola.velocidadeY : bola.velocidadeY;
+                    //verifica se bateu raquete minha
+                    if (bola.x + bola.raio >= minhaRaquete.x && bola.x + bola.raio <= minhaRaquete.x + 21 && bola.y + bola.raio >= minhaRaquete.y && bola.y - bola.raio <= minhaRaquete.y + minhaRaquete.comprimentoJogador) {
+                        bola.velocidadeX = -bola.velocidadeX;
+                        oponenteRaquete.comecar = true;
+                        oponenteRaquete.inicialY = calculaPosicaoOponente();
+                        //acelera bola bateu cima eu
+                        if (bola.acelerou == false){
+                            if(bola.y + bola.raio >= minhaRaquete.y && bola.y - bola.raio <= minhaRaquete.y + 40){
+                                bola.acelerou = true;
+                                bola.velocidadeX = 1.5 * bola.velocidadeX;
+                                bola.velocidadeY = 1.5 * bola.velocidadeY;
+                            }
+                        }
+                        //acelera bola bateu baixo eu
+                        if (bola.acelerou == false){
+                            if (bola.y + bola.raio >= minhaRaquete.y + 80 && bola.y - bola.raio <= minhaRaquete.y + minhaRaquete.comprimentoJogador){
+                                bola.acelerou = true;
+                                bola.velocidadeX = 1.5 * bola.velocidadeX;
+                                bola.velocidadeY = 1.5 * bola.velocidadeY;
+                            }  
+                        }
+                        //reduz bola bateu meio eu
+                        if (bola.acelerou == true){
+                            if (bola.y + bola.raio >= minhaRaquete.y + 41 && bola.y - bola.raio <= minhaRaquete.y + 79){
+                                bola.acelerou = false;
+                                bola.velocidadeX = bola.velocidadeX / 1.5;
+                                bola.velocidadeY = bola.velocidadeY / 1.5;
+                            }
+                        }
+                    }
+                    //verifica se bateu raquete oponente
+                    if (bola.x - bola.raio <= oponenteRaquete.x + 15 && bola.x - bola.raio >= oponenteRaquete.x - 10 && bola.y + bola.raio >= oponenteRaquete.y && bola.y - bola.raio <= oponenteRaquete.y + oponenteRaquete.comprimentoJogador) {
+                        bola.velocidadeX = -bola.velocidadeX;
+                                //acelera bola bateu cima inimigo
+                        if (bola.acelerou == false){
+                            if(bola.y + bola.raio >= oponenteRaquete.y && bola.y - bola.raio <= oponenteRaquete.y + 40){
+                                bola.acelerou = true;
+                                bola.velocidadeX = 1.5 * bola.velocidadeX;
+                                bola.velocidadeY = 1.5 * bola.velocidadeY;
+                            }
+                        }
+                        //acelera bola bateu baixo inimigo
+                        if (bola.acelerou == false){
+                            if (bola.y + bola.raio >= oponenteRaquete.y + 80 && bola.y - bola.raio <= oponenteRaquete.y + oponenteRaquete.comprimentoJogador){
+                                bola.acelerou = true;
+                                bola.velocidadeX = 1.5 * bola.velocidadeX;
+                                bola.velocidadeY = 1.5 * bola.velocidadeY;
+                            }  
+                        } 
+                        //reduz bola bateu meio inimigo
+                        if (bola.acelerou == true){
+                            if (bola.y + bola.raio >= oponenteRaquete.y + 41 && bola.y - bola.raio <= oponenteRaquete.y + 79){
+                                bola.acelerou = false;
+                                bola.velocidadeX = bola.velocidadeX / 1.5;
+                                bola.velocidadeY = bola.velocidadeY / 1.5;
+                            }
+                        }
+                    }
+                    //verifica fez ponto
+                    if (bola.x + bola.raio >= tela.width || bola.x - bola.raio <= 0) {
+            
+                        bola.x + bola.raio >= tela.width ? oponenteRaquete.pontuacao++ : minhaRaquete.pontuacao++;
+                         
+                        reiniciaBola()
+                        oponenteRaquete.inicialY = 60;
+                        bola.acelerou = false;
+                        bola.velocidadeX = 10 * calculaDirecaoBola();
+                        bola.velocidadeY = 8 * calculaDirecaoBola();
+                    }        
+                }
+                function reiniciaBola(){
+                    bola.x = 650;
+                    bola.y = 300;
+                }
+                function pontuacaoMinha(){
+                    let placar = [zero, um, dois, três, quatro, cinco, seis, sete, oito, nove];
+                    if (minhaRaquete.pontuacao > 9) {
+                        minhaRaquete.pontuacao = 0;
+                        oponenteRaquete.pontuacao = 0;
+                        poderesPrimeiraVez = false;
+                        poderesAtivo = false
+                        minhaRaquete.comprimentoJogador = 200;
+                        bola.raio = 12;
+                        bola.cor = "white";
+                        minhaRaquete.comprimentoJogador = 150;
+                        segundosPassados = 0;
+                        tempoPoderAtivo = 0;
+                        mostrarGanhouEu = true;
+                    }
+                    pincel.drawImage(placar[minhaRaquete.pontuacao], 670, 0, 100, 100)
+                    
+                }
+                function pontuacaoInimigo(){
+                    let placar = [zero, um, dois, três, quatro, cinco, seis, sete, oito, nove];
+                    if (oponenteRaquete.pontuacao > 9) {
+                        oponenteRaquete.pontuacao = 0;
+                        minhaRaquete.pontuacao = 0;
+                        poderesPrimeiraVez = false;
+                        poderesAtivo = false
+                        minhaRaquete.comprimentoJogador = 200;
+                        bola.raio = 12;
+                        bola.cor = "white";
+                        minhaRaquete.comprimentoJogador = 150;
+                        segundosPassados = 0;
+                        tempoPoderAtivo = 0;
+                        mostrarGanhouOponente = true;
+                    }
+                    pincel.drawImage(placar[oponenteRaquete.pontuacao], 530, 0, 100, 100);
+                    
+                }
+                function criaPoder() {
+                        if (poderAzul != null) {
+                            posicaoXPoder += 10;
+                            posicaoBolaPoder(poderAzul.cor, posicaoXPoder, poderAzul.posicaoY);
+                            atualizaPoder(poderAzul.cor, posicaoXPoder, poderAzul.posicaoY);
+                        }
+                        if (poderCinza != null) {
+                            posicaoXPoder += 10;
+                            posicaoBolaPoder(poderCinza.cor, posicaoXPoder, poderCinza.posicaoY);
+                            atualizaPoder(poderCinza.cor, posicaoXPoder, poderCinza.posicaoY);
+                        }
+                        if (poderVermelho != null) {
+                            posicaoXPoder += 10;
+                            posicaoBolaPoder(poderVermelho.cor, posicaoXPoder, poderVermelho.posicaoY);
+                            atualizaPoder(poderVermelho.cor, posicaoXPoder, poderVermelho.posicaoY);
+                        }
+                        if (poderAmarelo != null) {
+                            posicaoXPoder += 10;
+                            posicaoBolaPoder(poderAmarelo.cor, posicaoXPoder, poderAmarelo.posicaoY);
+                            atualizaPoder(poderAmarelo.cor, posicaoXPoder, poderAmarelo.posicaoY);
+                        }
+                    }
+                function atualizaPoder() {
+                        if (posicaoXPoder >= 1330) {
+                            posicaoXPoder = -25;
+                            poderesAtivo = false;
+                            poderAmarelo = null;
+                            poderAzul = null;
+                            poderCinza = null;
+                            poderVermelho = null;
+                        }
+                        //muda cor bola
+                        if (poderCinza != null && posicaoXPoder + 10 >= minhaRaquete.x && poderCinza.posicaoY + 10 >= minhaRaquete.y && poderCinza.posicaoY - 10 <= minhaRaquete.y + 120) {
+                            posicaoXPoder = -25;
+                            tempoPoderAtivo = 0;
+                            bola.cor = "rgb(015, 015, 015)";
+                            poderCinza = null;
+                        }
+                        //aumenta tamanho bola
+                        if (poderAzul != null && posicaoXPoder + 10 >= minhaRaquete.x && poderAzul.posicaoY + 10 >= minhaRaquete.y && poderAzul.posicaoY - 10 <= minhaRaquete.y + 120) {
+                            posicaoXPoder = -25;
+                            tempoPoderAtivo = 0;
+                            bola.raio = 25;
+                            poderAzul = null;
+                        }
+                        //aumenta tamanho raquete
+                        if (poderVermelho != null && posicaoXPoder + 10 >= minhaRaquete.x && poderVermelho.posicaoY + 10 >= minhaRaquete.y && poderVermelho.posicaoY - 10 <= minhaRaquete.y + 120) {
+                            posicaoXPoder = -25;
+                            tempoPoderAtivo = 0;
+                            minhaRaquete.comprimentoJogador = 200;
+                            poderVermelho = null;
+                        }
+                        //aumenta velocidade bola
+                        if (poderAmarelo != null && posicaoXPoder + 10 >= minhaRaquete.x && poderAmarelo.posicaoY + 10 >= minhaRaquete.y && poderAmarelo.posicaoY - 10 <= minhaRaquete.y + 120) {
+                            posicaoXPoder = -25;
+                            tempoPoderAtivo = 0;
+                            bola.velocidadeX = bola.velocidadeX * 1.4;
+                            bola.velocidadeY = bola.velocidadeY * 1.2;
+                            poderAmarelo = null;
+                        }
+                    }   
+                function atualizaTela() {
+                    // input.value = bola.velocidadeX
+                    atualizaPosicaoInimigo();
+            
+                    corFundo();
+                    construirLinha();
+            
+                    pontuacaoMinha();
+                    pontuacaoInimigo();
+            
+                    criarJogador();
+                    criarInimigo();
+            
+                    atualizaBola();
+                    posicaoInicialBola(bola.cor);
+            
+                    if(mostrarGanhouEu){
+                        if(segundosPassados == 4){
+                            mostrarGanhouEu = false;
+                        }
+                        pincel.drawImage(euWin, 773, 13, 500, 80);
+                    } else if (mostrarGanhouOponente){
+                        if(segundosPassados == 4){
+                            mostrarGanhouOponente = false;
+                        }
+                        pincel.drawImage(oponenteWin, 27, 13, 500, 80)
+                    }
+            
+                    if (poderesAtivo) {
+                        if (poderAzul != null) {
+                            criaPoder();
+                        }
+                        if (poderCinza != null) {
+                            criaPoder();
+                        }
+                        if (poderVermelho != null) {
+                            criaPoder();
+                        }
+                        if (poderAmarelo != null) {
+                            criaPoder();
+                        }
+                    }
+                    if (tempoPoderAtivo == 8){
+                        if (poderCinza == null){
+                            bola.cor = "white";
+                        }
+                        if (poderAzul == null){
+                            bola.raio = 12;
+                        }
+                        if (poderVermelho == null){
+                            minhaRaquete.comprimentoJogador = 150;
+                        }
+                        if (poderAmarelo == null){
+                            if(bola.velocidadeX == 14 || bola.velocidadeX == 21){
+                                bola.velocidadeX = bola.velocidadeX / 1.4;
+                                bola.velocidadeY = bola.velocidadeY / 1.2;
+                            }
+                            
+                        }
+                    }
+                }
+                function lidaSetas(seta) {
+                    let subir = true;
+                    let descer = true;
+            
+                    minhaRaquete.y + minhaRaquete.comprimentoJogador >= tela.height ? descer = false : posicaoCima = true;
+                    minhaRaquete.y <= 0 ? subir = false : posicaoBaixo = true;
+            
+                    if (subir) {
+                        if (seta.keyCode == cima) {
+                            minhaRaquete.y -= 30;
+                        }
+                    }
+                    if (descer) {
+                        if (seta.keyCode == baixo) {
+                            minhaRaquete.y += 30;
+                        }
+                    }
+                    return false; //não movimenta a tela quando clica no botão de subir ou descer
+                }
+                function lidaPoderes() {
+                    function posicaoYPoder() {
+                        let yPoder = 0;
+                        while (yPoder < 50 || yPoder > 550) { yPoder = Math.round(Math.random()*1000) }
+                        return yPoder;
+                    }   
+                    let i = 4;
+                    let sorteiaPoderes = ["yellow", "blue", "red", "gray"];
+                    while (i >= 4) { i = Math.floor(Math.random() * 10) }
+                    sorteiaPoderes[i];
+                    if (sorteiaPoderes[i] == "gray") {
+                        poderCinza = new Poderes("gray", posicaoYPoder(), true);
+                        poderesAtivo = true;
+                    }
+                    if (sorteiaPoderes[i] == "blue") {
+                        poderAzul = new Poderes("blue", posicaoYPoder(), true);
+                        poderesAtivo = true;
+                    }
+                    if (sorteiaPoderes[i] == "red") {
+                        poderVermelho = new Poderes("red", posicaoYPoder(), true);
+                        poderesAtivo = true;
+                    }
+                    if (sorteiaPoderes[i] == "yellow") {
+                        poderAmarelo = new Poderes("yellow", posicaoYPoder(), true);
+                        poderesAtivo = true; 
+                    }
+                }
+                function contaSegundos(){
+                    segundosPassados++;
+                    tempoPoderAtivo++;
+                    if(poderesPrimeiraVez) {
+                        if (segundosPassados == 13){
+                            poderesPrimeiraVez = false;
+                            lidaPoderes();
+                            segundosPassados = 0;
+                        }
+                    }
+                    if (!poderesPrimeiraVez){
+                        if (segundosPassados == 18){
+                            lidaPoderes();
+                            segundosPassados = 0;
+                        }
+                    }
+                }
+                document.onkeydown = lidaSetas;
+                setInterval(atualizaTela, 20);
+                setInterval(contaSegundos, 1000);
+            </script>
+        </section>
+    </main>
+    <footer class="rodape">
+        <p1 class="rodape__texto">Criado por: Guilherme Mota</p1>
+    </footer>
+</body>
+</html>

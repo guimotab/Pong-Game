@@ -10,6 +10,7 @@
     margin: 0;
     padding: 0;
 }
+
 .tela-jogo {
     background-color: var(--cor-primaria);
 }

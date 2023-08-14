@@ -1,12 +1,12 @@
-import { BallClass } from "./models/Ball.js";
-import { PlayerClass } from "./models/Player.js";
-import { Player2Class } from "./models/Player2.js";
-import { bgColor, buildLine } from "./utils/buildGame.js";
-import { createP1, createP2 } from "./utils/buildPlayers.js";
-import { createScoreP1, createScoreP2 } from "./utils/imagesGame.js";
-import { buildBall } from "./utils/buildBall.js";
-import { movePlayersDuo } from "./utils/movePlayers.js";
-import { checkWinner, matchPoint } from "./utils/winGame.js";
+import { BallClass } from "../models/Ball.js";
+import { PlayerClass } from "../models/Player.js";
+import { Player2Class } from "../models/Player2.js";
+import { bgColor, buildLine } from "../utils/buildGame.js";
+import { createP1, createP2 } from "../utils/buildPlayers.js";
+import { createScoreP1, createScoreP2 } from "../utils/imagesGame.js";
+import { buildBall } from "../utils/buildBall.js";
+import { movePlayersDuo } from "../utils/movePlayers.js";
+import { checkWinner, matchPoint } from "../utils/winGame.js";
 
 const tela = document.querySelector("canvas");
 const pincel = tela.getContext("2d");

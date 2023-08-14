@@ -24,17 +24,18 @@ export class OpponentClass extends PlayerBase {
     static marginError = 0
     followBall(ball, screenSizeX, screenSizeY, player2){
         const positionBallY = ball.y
-        if (ball.x <= 0 || ball.x + ball.size >= screenSizeX){
-            OpponentClass.marginError = 0
+        if (ball.x <= 10 || ball.x + ball.size >= screenSizeX - 10){
+            console.log("entrou");
+            this.marginError = 0
         }
         if(ball.x + ball.size >= player2.x){
-            OpponentClass.marginError = this.calculateMarginError()
+            this.marginError = this.calculateMarginError()
         }
         
-        if(this.y + this.height/2 < positionBallY + OpponentClass.marginError){
+        if(this.y + this.height/2 < positionBallY + this.marginError){
             this.y += this.speed
         } 
-        if (this.y + this.height/2 > positionBallY + OpponentClass.marginError){
+        if (this.y + this.height/2 > positionBallY + this.marginError){
             this.y -= this.speed
         }
         if (this.y < 0){
@@ -53,7 +54,7 @@ export class OpponentClass extends PlayerBase {
             if(marginError > 20) {
                 marginError = 0
             } else {
-                marginError = 80
+                marginError = 100
             }
             return - marginError
 
@@ -62,7 +63,7 @@ export class OpponentClass extends PlayerBase {
             if(marginError > 20) {
                 marginError = 0
             } else {
-                marginError = 150
+                marginError = 140
             }
             return marginError
 

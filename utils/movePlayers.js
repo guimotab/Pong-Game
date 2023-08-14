@@ -13,6 +13,7 @@ export function movePlayersDuo(player1, player2, player1Up, player1Down, player2
 export function movePlayersSolo(ball, opponent, player2, player2Up, player2Down, screenSizeX, screenSizeY){
     
     opponent.followBall(ball, screenSizeX, screenSizeY, player2)
+    
     if(player2Up && player2.y >= 0){
         player2.y -= player2.speed
     } else if (player2Down && player2.y + player2.height <= screenSizeY){

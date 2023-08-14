@@ -12,6 +12,7 @@
 }
 
 .tela-jogo {
+    height: max-content;
     background-color: var(--cor-primaria);
 }
 .cabecalho {
@@ -51,7 +52,7 @@
     justify-content: center;
 }
 .tela-jogo__programa {
-    margin: 0 140px 300px 140px;
+    margin: 0 8rem 5rem 8rem;
     border: 3px solid var(--cor-terciaria);
 }
 

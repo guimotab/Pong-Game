@@ -1,4 +1,4 @@
-import { PowersClass } from "./models/Powers.js";
+import { PowersClass } from "../models/Powers.js";
 
 const tela = document.querySelector("canvas");
 const pincel = tela.getContext("2d");

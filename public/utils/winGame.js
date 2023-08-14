@@ -58,8 +58,8 @@ function clearWinner(){
 export function drawWinner(winnerShow, winner){
     const player1Win = new Image();
     const player2Win = new Image();
-    player1Win.src = '../images/p1-gan.png';
-    player2Win.src = '../images/p2-gan.png';
+    player1Win.src = './images/p1-gan.png';
+    player2Win.src = './images/p2-gan.png';
     if(winnerShow && winner == 'player1'){
         pincel.drawImage(player1Win, 15, 13, 500, 80)
     } else if(winnerShow && winner == 'player2'){

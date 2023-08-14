@@ -7,8 +7,8 @@ export class OpponentClass extends PlayerBase {
     #width 
     #speed
     #score  
-    #scoreboardNumber = '../images/0.png'
-    constructor(x = 45, y = 240, height = 150, width = 16, speed = 9, score = 0, scoreboardNumber = '../images/0.png'){
+    #scoreboardNumber = './images/0.png'
+    constructor(x = 45, y = 240, height = 150, width = 16, speed = 9, score = 0, scoreboardNumber = './images/0.png'){
         super(x, y, height, width, speed, score, scoreboardNumber)
         this.#x = x
         this.#y = y
@@ -25,7 +25,6 @@ export class OpponentClass extends PlayerBase {
     followBall(ball, screenSizeX, screenSizeY, player2){
         const positionBallY = ball.y
         if (ball.x <= 10 || ball.x + ball.size >= screenSizeX - 10){
-            console.log("entrou");
             this.marginError = 0
         }
         if(ball.x + ball.size >= player2.x){

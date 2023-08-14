@@ -5,8 +5,8 @@ const score2 = new Image();
 const oponenteWin = new Image();
 const euWin = new Image();
 
-oponenteWin.src = '../images/op-gan.png';
-euWin.src = '../images/eu-gan.png';
+oponenteWin.src = './images/op-gan.png';
+euWin.src = './images/eu-gan.png';
 
 export function createScoreP1(Player1, screenSizeX) {
     score1.src = Player1.scoreboardNumber
